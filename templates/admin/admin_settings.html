@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Settings</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <img src="/static/img/logoss.png" alt="Logo" class="logo">
+                <h4>Admin Panel</h4>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li>
+                    <a href="{{ url_for('admin.admin_dashboard') }}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('admin.admin_analysis') }}">
+                        <i class="fas fa-chart-bar"></i> Crime Analysis
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('admin.admin_logs') }}">
+                        <i class="fas fa-clipboard-list"></i> Activity Logs
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="{{ url_for('admin.admin_settings') }}">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('admin.admin_logout') }}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <p>Logged in as: <strong>{{ session.get('admin_name') }}</strong></p>
+                <span class="badge bg-primary">Super Admin</span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="admin-header">
+                <h2><i class="fas fa-cog"></i> Admin Settings</h2>
+                <div class="header-actions">
+                    <span class="last-login">
+                        <i class="fas fa-clock"></i> Last active: Just now
+                    </span>
+                </div>
+            </div>
+            
+            {% if not session.get('settings_access') %}
+            <!-- Access Code Form -->
+            <div class="access-code-container">
+                <div class="access-code-card">
+                    <div class="access-code-header">
+                        <i class="fas fa-lock"></i>
+                        <h3>Super Admin Access Required</h3>
+                        <p>Enter the access code to continue</p>
+                    </div>
+    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="flash-messages">
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" class="access-code-form">
+                        <div class="form-group">
+                            <label for="accessCode"><i class="fas fa-key"></i> Access Code</label>
+                            <input type="password" id="accessCode" name="access_code" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                
+                </div>
+            </div>
+            {% else %}
+            <!-- Admin Management -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-user-shield"></i> Admin Accounts</h3>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAdminModal">
+                        <i class="fas fa-plus"></i> Create New Admin
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="admins-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Last Login</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for admin in admins %}
+                            <tr>
+                                <td>{{ admin.username }}</td>
+                                <td>{{ admin.full_name }}</td>
+                                <td>{{ admin.email }}</td>
+                                <td>
+                                    {% if admin.is_superadmin %}
+                                    <span class="badge bg-primary">Super Admin</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Admin</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ admin.last_login or 'Never' }}</td>
+                                <td>{{ admin.created_at }}</td>
+                                <td>
+                                    {% if not admin.is_superadmin or (admin.is_superadmin and admin.id == session.get('admin_id')) %}
+                                    <button class="btn btn-sm btn-warning" onclick="editAdmin({{ admin.id }})">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    {% endif %}
+                                    
+                                    {% if not admin.is_superadmin %}
+                                    <button class="btn btn-sm btn-danger" onclick="confirmDeleteAdmin({{ admin.id }}, '{{ admin.username }}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- System Settings -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-sliders-h"></i> System Settings</h3>
+                </div>
+                
+                <form class="system-settings-form" method="POST" action="{{ url_for('admin.update_maintenance_mode') }}">
+                    <div class="form-group">
+                        <label for="maintenanceMode">Maintenance Mode</label>
+                        <select id="maintenanceMode" name="maintenance_mode" class="form-select">
+                            <option value="0" {% if not maintenance_mode %}selected{% endif %}>Disabled</option>
+                            <option value="1" {% if maintenance_mode %}selected{% endif %}>Enabled</option>
+                        </select>
+                        <small class="form-text text-muted">
+                            When enabled, users will see a maintenance page and won't be able to access the system.
+                        </small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Create Admin Modal -->
+    <div class="modal fade" id="createAdminModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Admin</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="create_admin" value="1">
+                        
+                        <div class="form-group mb-3">
+                            <label for="newUsername">Username</label>
+                            <input type="text" id="newUsername" name="username" class="form-control" required autocomplete="off">
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="newPassword">Password</label>
+                            <input type="password" id="newPassword" name="password" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="newFullName">Full Name</label>
+                            <input type="text" id="newFullName" name="full_name" class="form-control" required autocomplete="off">
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="newEmail">Email</label>
+                            <input type="email" id="newEmail" name="email" class="form-control" required autocomplete="off">
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input type="checkbox" id="isSuperadmin" name="is_superadmin" class="form-check-input">
+                            <label for="isSuperadmin" class="form-check-label">Super Admin Privileges</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Admin</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteAdminModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteAdminMessage"></p>
+                    <p class="text-danger">This action cannot be undone!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete Admin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/admin_script.js"></script>
+</body>
+</html>

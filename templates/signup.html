@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="static/js/script.js"></script>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="/static/img/logoss.png" alt="Logo" class="logo">
+        <h4>Crime Prevention App and Analysis</h4>
+    </div>
+    <div class="wrapper">
+        <h1>Sign Up</h1>
+        <form method="POST" autocomplete="off">
+            <div class="input-group">
+                <label for="fname"><i class="fas fa-user"></i></label>
+                <input type="text" id="fname" name="fname" placeholder="First Name" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="lname"><i class="fas fa-user"></i></label>
+                <input type="text" id="lname" name="lname" placeholder="Last Name" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="phone_num"><i class="fas fa-phone"></i></label>
+                <input type="number" id="phone_num" name="phone_num" placeholder="Phone Number" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="age"><i class="fas fa-birthday-cake"></i></label>
+                <input type="number" id="age" name="age" placeholder="Age" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="birthday"><i class="fas fa-calendar"></i></label>
+                <input type="date" id="birthday" name="birthday" placeholder="Birthday" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="email"><i class="fas fa-envelope"></i></label>
+                <input type="email" id="email" name="email" placeholder="Email" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="password"><i class="fas fa-lock"></i></label>
+                <input type="password" id="password" name="password" placeholder="Password" required autocomplete="new-password">
+                <span class="toggle-password" onclick="togglePasswordVisibility()">
+                    <i class="fas fa-eye"></i>
+                </span>
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="/login">Log in here</a></p>
+    </div>
+    <div class="wrapper">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.toggle-password i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>

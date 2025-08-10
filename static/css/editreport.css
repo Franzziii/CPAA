@@ -1,0 +1,275 @@
+body {
+    background: linear-gradient(to right, #0b0521, #1e1c21);
+    color: #000000;
+    font-family: 'Poppins', sans-serif;
+}
+.container {
+    max-width: 650px;
+    margin-top: 80px;
+}
+.card {
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgb(255, 252, 252);
+    background: #232225;
+    color: #101010;
+}
+.form-control {
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #d7d7d7;
+    transition: border-color 0.3s ease;
+}
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+.btn-primary:hover {
+    background-color: #007b25;
+}
+.btn-secondary {
+    background-color: #ac0014;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+.btn-secondary:hover {
+    background-color: #303235;
+}
+h2 {
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #ffffff;
+}
+h3 {
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #ffffff;
+}
+label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #e9f4ff;
+}
+/* Flash Messages Styling with Animation */
+.flash-messages {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 600px;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.alert {
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: slideDown 0.5s ease-out forwards;
+    transition: all 0.5s ease;
+}
+
+.alert::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    animation: progressBar 5s linear forwards;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+
+/* Fade out animation when closing */
+.alert.fade-out {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+
+/* Keyframe animations */
+@keyframes slideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes progressBar {
+    0% {
+        width: 100%;
+    }
+    100% {
+        width: 0%;
+    }
+}
+
+/* Auto-dismiss after 5 seconds */
+.alert.auto-dismiss {
+    animation-delay: 3s;
+    animation-fill-mode: forwards;
+}
+
+/* status */
+.status-container {
+    background: #000000;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ffffff;
+}
+
+.status-details {
+    margin-bottom: 20px;
+    color: #e6e6ef;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #ffffff;
+    min-width: 120px;
+}
+
+.detail-value {
+    color: #ffffff;
+}
+
+.concern-details {
+    background: #2a2b36;
+    border: 1px solid #fbfbff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.concern-details h4 {
+    color: #f9f9f9;
+    margin-bottom: 10px;
+}
+
+.concern-details p {
+    color: #e6e6ef;
+    line-height: 1.6;
+}
+
+.admin-feedback {
+    background: #2a2b36;
+    border: 1px solid #42434a;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.admin-feedback h4 {
+    color: #b0b3c1;
+    margin-bottom: 10px;
+}
+
+.feedback-box {
+    background: #1e1f29;
+    border-radius: 6px;
+    padding: 15px;
+    color: #e6e6ef;
+}
+
+.status-badge {
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-pending {
+    background-color: #ffffff;
+    color: #856404;
+}
+
+.status-received {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-in-progress {
+    background-color: #bee5eb;
+    color: #0c5460;
+}
+
+.status-resolved {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Birthday</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="static/js/script.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        <h1>Date of Birth</h1>
+        <form method="POST" autocomplete="off">
+            <div class="birthday-input-group">
+                <!-- Month Dropdown -->
+                <div class="birthday-dropdown">
+                    <label for="month">Month</label>
+                    <select id="month" name="month" required>
+                        <option value="" disabled selected>Month</option>
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                
+
+                <!-- Day Dropdown -->
+                <div class="birthday-dropdown">
+                    <label for="day">Day</label>
+                    <select id="day" name="day" required>
+                        <option value="" disabled selected>Day</option>
+                        <!-- Days 1-31 -->
+                        <script>
+                            for (let i = 1; i <= 31; i++) {
+                                document.write(`<option value="${String(i).padStart(2, '0')}">${i}</option>`);
+                            }
+                        </script>
+                    </select>
+                </div>
+
+                <!-- Year Dropdown -->
+                <div class="birthday-dropdown">
+                    <label for="year">Year</label>
+                    <select id="year" name="year" required>
+                        <option value="" disabled selected>Year</option>
+                        <!-- Years 1900 to current year -->
+                        <script>
+                            const currentYear = new Date().getFullYear();
+                            for (let i = currentYear; i >= 1900; i--) {
+                                document.write(`<option value="${i}">${i}</option>`);
+                            }
+                        </script>
+                    </select>
+                </div>
+            </div>
+            <button type="submit">Confirm</button>
+        </form>
+        <p><a href="/login">Cancel and return to login</a></p>
+        
+         <!-- Flash Messages -->
+         {% with messages = get_flashed_messages(with_categories=true) %}
+         {% if messages %}
+             <div class="flash-messages">
+                 {% for category, message in messages %}
+                     <div class="alert alert-{{ category }}">
+                         {{ message }}
+                     </div>
+                 {% endfor %}
+             </div>
+         {% endif %}
+     {% endwith %}
+    </div>
+    
+</body>
+</html>

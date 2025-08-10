@@ -1,0 +1,451 @@
+/* General Styles */
+:root {
+  --primary-color: #00204a; /* Dark blue */
+  --secondary-color: #00bbf0; /* Light blue */
+  --background-color: #f5f7fa; /* Light gray */
+  --text-color: #333; /* Dark gray */
+  --input-bg: #ffffff; /* White */
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Flash Messages Styling with Animation */
+.flash-messages {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 600px;
+  z-index: 1000;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.alert {
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: slideDown 0.5s ease-out forwards;
+  transition: all 0.5s ease;
+}
+
+.alert::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  animation: progressBar 5s linear forwards;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-left: 4px solid #dc3545;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 4px solid #28a745;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border-left: 4px solid #17a2b8;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}
+
+/* Fade out animation when closing */
+.alert.fade-out {
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+/* Keyframe animations */
+@keyframes slideDown {
+  0% {
+      opacity: 0;
+      transform: translateY(-20px);
+  }
+  100% {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes progressBar {
+  0% {
+      width: 100%;
+  }
+  100% {
+      width: 0%;
+  }
+}
+
+/* Auto-dismiss after 5 seconds */
+.alert.auto-dismiss {
+  animation-delay: 3s;
+  animation-fill-mode: forwards;
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-container .logo {
+  width: 200px;
+  height: auto;
+}
+
+.logo-container h4 {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-top: 10px;
+}
+
+.wrapper {
+  background-color: var(--input-bg);
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px var(--shadow-color);
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.input-group:focus-within {
+  border-color: var(--secondary-color);
+}
+
+.input-group label {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  font-size: 1rem;
+  background-color: var(--input-bg);
+  outline: none;
+}
+
+/* Add this to your styles.css */
+.input-group {
+  position: relative; /* Add this to make absolute positioning relative to this container */
+}
+
+.input-group input[type="password"],
+.input-group input[type="text"] {
+  padding-right: 40px; /* Add padding to prevent text from going under the eye icon */
+}
+
+.input-group .toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%); /* Center vertically */
+  padding: 5px;
+  cursor: pointer;
+  color: var(--primary-color);
+  transition: color 0.3s ease;
+  background: none;
+  border: none;
+  z-index: 2;
+}
+
+.input-group .toggle-password:hover {
+  color: var(--secondary-color);
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+p {
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
+/* OTP Verification Page Styles */
+.wrapper {
+  background-color: var(--input-bg);
+  width: 100%;
+  max-width: 400px;
+  padding: 30px;
+  border-radius: 5px;
+  box-shadow: 0 8px 20px var(--shadow-color);
+  text-align: center;
+  position: relative;
+  z-index: 1; /* Ensure the form is above the background */
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.input-group:focus-within {
+  border-color: var(--secondary-color);
+}
+
+.input-group label {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  font-size: 1rem;
+  background-color: var(--input-bg);
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+p {
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
+/* Underline Input Field */
+.underline-input {
+  border: none;
+  border-bottom: 2px solid var(--primary-color);
+  outline: none;
+  width: 100%;
+  padding: 5px 0;
+  font-size: 18px;
+  background: transparent;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.underline-input:focus {
+  border-bottom-color: var(--secondary-color);
+}
+
+/* Countdown Timer */
+.countdown {
+  font-size: 14px;
+  color: var(--primary-color);
+  margin-top: 10px;
+}
+
+/* Resend OTP Button */
+.resend-otp {
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.resend-otp:hover {
+  color: var(--secondary-color);
+}
+
+.resend-otp.disabled {
+  color: #666;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+/* Birthday Dropdown Styles */
+.birthday-input-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.birthday-dropdown {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.birthday-dropdown label {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.birthday-dropdown select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1rem;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.birthday-dropdown select:focus {
+  border-color: var(--secondary-color);
+}
+
+/* Responsive Design for Birthday Dropdowns */
+@media (max-width: 480px) {
+  .birthday-input-group {
+      flex-direction: column;
+  }
+
+  .birthday-dropdown select {
+      padding: 8px;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .wrapper {
+      padding: 10px;
+  }
+
+  h1 {
+      font-size: 1.5rem;
+  }
+
+  .input-group input {
+      padding: 10px;
+  }
+
+  button {
+      padding: 12px;
+  }
+}

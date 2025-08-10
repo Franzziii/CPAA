@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="static/js/script.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
+</head>
+<body>
+    
+    <div id="flash-messages"></div>
+    <div id="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="wrapper">
+        <h1>Verification Code:</h1>
+        <form method="POST" autocomplete="off">
+          <div class="input-group">
+            <input type="text" id="otp" name="otp" placeholder="Enter OTP" required autocomplete="off" class="underline-input">
+          </div>
+          <p>OTP has been sent to your email.</p>
+          <button type="submit">Verify OTP</button>
+          <div class="countdown" id="countdown">04:00</div>
+        </form>
+        <p>Didn't receive the OTP? 
+          <span id="resend-otp" class="resend-otp">Resend OTP</span>
+          <span id="attempts-left"></span>
+        </p>
+      </div>
+      
+
+    <script>
+        // Countdown timer
+        let timeLeft = 240; // 4 minutes in seconds
+        const countdownElement = document.getElementById('countdown');
+        const resendOtpElement = document.getElementById('resend-otp');
+        const attemptsLeftElement = document.getElementById('attempts-left');
+        let attemptsLeft = 3;
+
+        function updateCountdown() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (timeLeft > 0) {
+                timeLeft--;
+                setTimeout(updateCountdown, 1000);
+            } else {
+                countdownElement.textContent = "Time's up!";
+                resendOtpElement.classList.remove('disabled');
+            }
+        }
+
+        updateCountdown();
+
+        // Resend OTP logic
+        resendOtpElement.addEventListener('click', function () {
+            if (timeLeft > 0 || attemptsLeft <= 0) return;
+
+            fetch('/resend_otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('OTP has been resent. Please check your email.');
+                    timeLeft = 240; // Reset the timer
+                    updateCountdown();
+                    attemptsLeft--;
+                    attemptsLeftElement.textContent = `(${attemptsLeft} attempts left)`;
+                    resendOtpElement.classList.add('disabled');
+
+                    if (attemptsLeft === 0) {
+                        resendOtpElement.classList.add('disabled');
+                        attemptsLeftElement.textContent = '(No attempts left)';
+                    }
+                } else {
+                    alert('Failed to resend OTP. Please try again later.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again later.');
+            });
+        });
+    </script>
+</body>
+</html>

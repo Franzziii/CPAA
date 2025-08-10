@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login As - Crime Prevention System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/login_as.css">
+    <script src="static/js/script.js"></script>
+</head>
+<body>
+    <div class="login-as-container">
+        <div class="login-as-card">
+            <div class="login-header">
+                <img src="/static/img/logoss.png" alt="Crime Prevention Logo" class="logo">
+                <h1>Welcome to Crime Prevention App and Analysis</h1>
+                
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="login-options">
+                <a href="{{ url_for('login') }}" class="login-option user-login">
+                    <div class="option-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="option-content">
+                        <h3>User Login</h3>
+                       
+                    </div>
+                    <div class="option-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('admin.admin_login') }}" class="login-option admin-login">
+                    <div class="option-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="option-content">
+                        <h3>Admin Login</h3>
+                        
+                    </div>
+                    <div class="option-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+            </div>
+
+            <div class="signup-link">
+                Don't have a user account? <a href="{{ url_for('signup') }}">Sign up here</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

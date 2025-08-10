@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crime Analytics Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashb.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-logo">
+            <img src="/static/img/logoss.png" alt="Crime Prevention Logo" class="logo">
+        </div>
+        <div class="header-icons">
+            <a href="/dashboard" class="btn btn-primary back-arrow">
+                <i class="fas fa-arrow-left"></i>
+                <span class="btn-text">Dashboard</span>
+            </a>
+            <a href="/logout" class="btn btn-danger logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="btn-text">Logout</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <div class="dashboard-header">
+            <h2>Crime Analytics Dashboard</h2>
+            <div class="action-buttons">
+                <button class="btn btn-info" onclick="refreshCharts()">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="btn-text">Refresh</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="info-cards-grid">
+            <div class="info-card">
+                <div class="icon-container blue"><i class="fas fa-clipboard-list"></i></div>
+                <h4>Total Reports</h4>
+                <div class="count">{{ total_reports }}</div>
+                <div class="change-indicator positive">
+                    <i class="fas fa-caret-up"></i> 2.7% Higher
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="icon-container orange"><i class="fas fa-hourglass-half"></i></div>
+                <h4>Pending Reports</h4>
+                <div class="count">{{ pending_reports }}</div>
+                <div class="change-indicator negative">
+                    <i class="fas fa-caret-down"></i> 27% Remaining
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="icon-container green"><i class="fas fa-check-circle"></i></div>
+                <h4>Resolved Reports</h4>
+                <div class="count">{{ resolved_reports }}</div>
+                <div class="change-indicator positive">
+                    <i class="fas fa-caret-up"></i> 35% Approved
+                </div>
+            </div>
+        </div>
+
+        <div id="analyticsSection" class="charts-container">
+            <div id="crimeTypeChartContainer" class="chart-card">
+                <div class="chart-title">Crime Type Distribution</div>
+                <div class="chart-wrapper">
+                    <canvas id="crimeTypeChart"></canvas>
+                </div>
+            </div>
+
+            <div id="locationChartContainer" class="chart-card">
+                <div class="chart-title">Top Crime Locations</div>
+                <div class="chart-wrapper">
+                    <canvas id="locationChart"></canvas>
+                </div>
+            </div>
+
+            <div id="statusChartContainer" class="chart-card">
+                <div class="chart-title">Case Status</div>
+                <div class="chart-wrapper">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Removed heatmap card -->
+        </div>
+
+        <div id="chartData" style="display: none;">
+            <div id="typeData">{{ type_data|tojson|safe }}</div>
+            <div id="locationData">{{ location_data|tojson|safe }}</div>
+            <div id="statusData">{{ status_data|tojson|safe }}</div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Crime Prevention & Analysis System. All rights reserved.</p>
+    </footer>
+
+    <script src="/static/js/dashboard_chart.js"></script>
+    
+    <script>
+        // Ensure charts are rendered after all resources are loaded
+        function loadCharts() {
+            if (typeof Chart !== 'undefined') {
+                renderCharts();
+            } else {
+                setTimeout(loadCharts, 100);
+            }
+        }
+
+        // Initial load
+        if (document.readyState === 'complete') {
+            loadCharts();
+        } else {
+            document.addEventListener('DOMContentLoaded', loadCharts);
+        }
+
+        // Refresh charts function
+        function refreshCharts() {
+            document.querySelectorAll('.chart-card').forEach(container => {
+                container.innerHTML = `
+                    <div class="no-data-message">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                        <p>Loading data...</p>
+                    </div>
+                `;
+            });
+            
+            // Re-render all charts after a short delay
+            setTimeout(() => {
+                renderCharts();
+            }, 500);
+        }
+        
+        // Handle window resize
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                renderCharts();
+            }, 200);
+        });
+    </script>
+</body>
+</html>

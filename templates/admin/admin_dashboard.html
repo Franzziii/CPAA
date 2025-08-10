@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <img src="/static/img/logoss.png" alt="Logo" class="logo">
+                <h4>Admin Panel</h4>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li class="active">
+                    <a href="{{ url_for('admin.admin_dashboard') }}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('admin.admin_analysis') }}">
+                        <i class="fas fa-chart-bar"></i> Crime Analysis
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('admin.admin_logs') }}">
+                        <i class="fas fa-clipboard-list"></i> Activity Logs
+                    </a>
+                </li>
+                {% if session.get('is_superadmin') %}
+                <li>
+                    <a href="{{ url_for('admin.admin_settings') }}">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{{ url_for('admin.admin_logout') }}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <p>Logged in as: <strong>{{ session.get('admin_name') }}</strong></p>
+                {% if session.get('is_superadmin') %}
+                <span class="badge bg-primary">Super Admin</span>
+                {% else %}
+                <span class="badge bg-secondary">Admin</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="admin-header">
+                <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+                <div class="header-actions">
+                    <span class="last-login">
+                        <i class="fas fa-clock"></i> Last active: Just now
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-row">
+                <div class="stat-card bg-primary">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_users }}</h3>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card bg-success">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ total_reports }}</h3>
+                        <p>Total Reports</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card bg-warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ status_data|selectattr('status', 'equalto', 'Pending')|map(attribute='count')|sum }}</h3>
+                        <p>Pending Reports</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card bg-danger">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>{{ status_data|selectattr('status', 'equalto', 'Under Investigation')|map(attribute='count')|sum }}</h3>
+                        <p>Under Investigation</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="quick-stat">
+                    <h4>Top Crime Types</h4>
+                    <ul>
+                        {% for crime in top_crimes %}
+                        <li>
+                            <span class="crime-type">{{ crime.incident_type }}</span>
+                            <span class="crime-count">{{ crime.count }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="quick-stat">
+                    <h4>Top Locations</h4>
+                    <ul>
+                        {% for location in top_locations %}
+                        <li>
+                            <span class="location">{{ location.location }}</span>
+                            <span class="location-count">{{ location.count }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="quick-stat">
+                    <h4>Reports by Status</h4>
+                    <canvas id="statusChart" height="200"></canvas>
+                </div>
+            </div>
+            
+            <!-- Recent Reports -->
+            <div class="recent-reports">
+                <div class="section-header">
+                    <h3><i class="fas fa-list"></i> Recent Crime Reports</h3>
+                 
+<div class="search-box">
+    <input type="text" id="reportSearch" placeholder="Search reports..." onkeyup="searchReports()">
+    <button onclick="searchReports()">
+        <i class="fas fa-search" id="searchIcon"></i>
+        <span class="spinner-border spinner-border-sm d-none" id="searchSpinner"></span>
+    </button>
+</div>
+
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th>Report ID</th>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in reports %}
+                            <tr>
+                                <td>#{{ report.id }}</td>
+                                <td>
+                                    {{ report.fname }} {{ report.lname }}
+                                    <small>{{ report.email }}</small>
+                                </td>
+                                <td>{{ report.incident_type }}</td>
+                                <td>
+                                    <a href="https://www.google.com/maps?q={{ report.latitude }},{{ report.longitude }}" target="_blank">
+                                        <i class="fas fa-map-marker-alt"></i> {{ report.location|truncate(20) }}
+                                    </a>
+                                </td>
+                                <td>{{ report.report_date }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ report.status|lower|replace(' ', '-') }}">
+                                        {{ report.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin.view_report', report_id=report.id) }}" class="action-btn view-btn">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Report Details #<span id="reportId"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="report-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Reported By:</span>
+                            <span class="detail-value" id="reportUser"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Contact:</span>
+                            <span class="detail-value" id="reportContact"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Location:</span>
+                            <span class="detail-value" id="reportLocation"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Date Reported:</span>
+                            <span class="detail-value" id="reportDate"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value" id="reportStatus"></span>
+                        </div>
+                        
+                        <div class="concern-details">
+                            <h6>Concern Details:</h6>
+                            <p id="reportConcern"></p>
+                        </div>
+                        
+                        <form id="statusForm">
+                            <input type="hidden" id="modalReportId">
+                            <div class="form-group">
+                                <label for="statusUpdate">Update Status</label>
+                                <select class="form-select" id="statusUpdate" required>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Received">Received</option>
+                                    <option value="Under Investigation">Under Investigation</option>
+                                    <option value="Resolved">Resolved</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminFeedback">Admin Feedback</label>
+                                <textarea class="form-control" id="adminFeedback" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Status</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/admin_script.js"></script>
+    <script>
+        // Initialize charts with data from template
+        document.addEventListener('DOMContentLoaded', function() {
+            initDashboardCharts(
+                {{ status_data|map(attribute='status')|list|tojson }},
+                {{ status_data|map(attribute='count')|list|tojson }}
+            );
+        });
+        
+        function searchReports() {
+    const input = document.getElementById('reportSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('.reports-table tbody tr');
+    const searchIcon = document.getElementById('searchIcon');
+    const spinner = document.getElementById('searchSpinner');
+    
+    // Show loading spinner
+    searchIcon.classList.add('d-none');
+    spinner.classList.remove('d-none');
+    
+    // Add slight delay to show spinner (optional)
+    setTimeout(() => {
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(input) ? '' : 'none';
+        });
+        
+        // Hide spinner and show icon again
+        spinner.classList.add('d-none');
+        searchIcon.classList.remove('d-none');
+    }, 200);
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOME</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+
+    <script src="static/js/script.js"></script>
+</head>
+
+<body>
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="/static/img/logoss.png" alt="Logo" class="logo">
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul class="navbar-nav" id="navbarNav">
+            <li class="nav-item active">
+                <a href="/dashboard" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <h4>Dashboard</h4>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/report" class="nav-link">
+                    <i class="fas fa-file-alt"></i>
+                    <h4> Complainant Concerns</h4>
+                </a>
+            </li>
+            <!--<li class="nav-item">
+                <a href="/login" class="nav-link">
+                    <button class="login-button">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Log In</span>
+                    </button>
+                </a>
+            </li>-->
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to Crime Prevention App and Analysis</h1>
+            <p>Providing communities with real-time crime reports and prevention insights.</p>
+            <a href="/report" class="btn-primary">Get Started</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+        <div class="container">
+            <h2>About Us</h2>
+            <p>Our mission is to enhance community safety through real-time crime reporting and analysis. We empower individuals with knowledge and resources to prevent crime and stay informed.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Crime Prevention App and Analysis. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const navbarNav = document.getElementById('navbarNav');
+            navbarNav.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

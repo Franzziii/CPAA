@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Crime Prevention App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #0a192f; /* Dark blue professional background */
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .animation-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .logo-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        
+        .logo-letter {
+            font-family: 'Orbitron', 'Arial', sans-serif; /* Technologic font */
+            font-weight: 700;
+            font-size: 0px;
+            color: transparent;
+            position: relative;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        /* Glitch effect */
+        .logo-letter::before,
+        .logo-letter::after {
+            content: attr(data-letter);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+        
+        .logo-letter::before {
+            color: #0ff;
+            z-index: -1;
+            animation: glitch-effect 3s infinite alternate;
+        }
+        
+        .logo-letter::after {
+            color: #f0f;
+            z-index: -2;
+            animation: glitch-effect 2s infinite alternate-reverse;
+        }
+        
+        /* For landscape orientation on mobile */
+        @media screen and (orientation: landscape) {
+            .logo-letter {
+                font-size: 0px;
+            }
+        }
+        
+        .skip-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 100;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+        
+        .skip-btn:hover, .skip-btn:active {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            color: #0ff;
+            border-color: #0ff;
+        }
+        
+        /* Loading spinner - kept as fallback */
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #0ff;
+            animation: spin 1s ease-in-out infinite;
+            z-index: 10;
+            display: none;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        /* Fallback message */
+        .fallback-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+            display: none;
+            z-index: 5;
+            padding: 20px;
+            max-width: 80%;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        /* Animation keyframes */
+        @keyframes mergeIn {
+            0% {
+                transform: translateY(-50px) scale(0.8);
+                opacity: 0;
+                text-shadow: 0 0 20px #0ff;
+            }
+            50% {
+                transform: translateY(10px) scale(1.1);
+                opacity: 0.8;
+                text-shadow: 0 0 30px #0ff;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+                text-shadow: 0 0 10px #0ff;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                text-shadow: 0 0 10px #0ff;
+            }
+            50% {
+                transform: scale(1.05);
+                text-shadow: 0 0 20px #0ff, 0 0 30px rgba(0, 255, 255, 0.5);
+            }
+        }
+        
+        @keyframes glitch-effect {
+            0% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-3px, 3px);
+            }
+            40% {
+                transform: translate(-3px, -3px);
+            }
+            60% {
+                transform: translate(3px, 3px);
+            }
+            80% {
+                transform: translate(3px, -3px);
+            }
+            100% {
+                transform: translate(0);
+            }
+        }
+        
+        @keyframes fadeOut {
+            from { 
+                opacity: 1;
+                transform: scale(1);
+            }
+            to { 
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+        
+        /* Background elements */
+        .bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            background-color: rgba(0, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="animation-container">
+        <!-- Background elements -->
+        <div class="bg-grid"></div>
+        <div class="particles" id="particles"></div>
+        
+        <!-- Logo animation -->
+        <div class="logo-container">
+            <div class="logo-letter" id="letter-c" data-letter="C">C</div>
+            <div class="logo-letter" id="letter-p" data-letter="P">P</div>
+            <div class="logo-letter" id="letter-a1" data-letter="A">A</div>
+            <div class="logo-letter" id="letter-a2" data-letter="A">A</div>
+        </div>
+        
+        <!-- Loading spinner -->
+        <div class="loader"></div>
+        
+        <!-- Fallback message -->
+        <div class="fallback-message">
+            <h2>Welcome to Crime Prevention App</h2>
+            <p>There was an error loading the animation. Please proceed to login.</p>
+            <button onclick="skipAnimation()" class="skip-btn">Continue</button>
+        </div>
+        
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const letters = [
+                document.getElementById('letter-c'),
+                document.getElementById('letter-p'),
+                document.getElementById('letter-a1'),
+                document.getElementById('letter-a2')
+            ];
+            const loader = document.querySelector('.loader');
+            const fallbackMessage = document.querySelector('.fallback-message');
+            const particlesContainer = document.getElementById('particles');
+            
+            // Create particles
+            function createParticles() {
+                const particleCount = 30;
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // Random properties
+                    const size = Math.random() * 5 + 1;
+                    const posX = Math.random() * 100;
+                    const delay = Math.random() * 15;
+                    const duration = 10 + Math.random() * 10;
+                    
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${posX}%`;
+                    particle.style.bottom = `-10px`;
+                    particle.style.animationDelay = `${delay}s`;
+                    particle.style.animationDuration = `${duration}s`;
+                    particle.style.opacity = Math.random() * 0.5 + 0.1;
+                    
+                    particlesContainer.appendChild(particle);
+                }
+            }
+            
+            function startAnimation() {
+                try {
+                    createParticles();
+                    
+                    // Initial state - letters merged together
+                    letters.forEach((letter, index) => {
+                        letter.style.fontSize = '0px';
+                        letter.style.margin = '0';
+                        letter.style.color = 'transparent';
+                    });
+                    
+                    // Phase 1: Merge animation (letters grow from center)
+                    setTimeout(() => {
+                        letters.forEach((letter, index) => {
+                            // Staggered appearance
+                            setTimeout(() => {
+                                letter.style.fontSize = '80px';
+                                letter.style.color = '#fff';
+                                letter.style.animation = 'mergeIn 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+                                
+                                // Add spacing after animation completes
+                                setTimeout(() => {
+                                    letter.style.margin = '0 10px';
+                                    letter.style.animation = 'pulse 2s infinite ease-in-out';
+                                }, 1500);
+                                
+                            }, index * 200);
+                        });
+                    }, 500);
+                    
+                    // Phase 2: Hold the logo with pulse effect
+                    // Phase 3: Final fade out
+                    setTimeout(() => {
+                        letters.forEach(letter => {
+                            letter.style.animation = 'fadeOut 1.5s ease-out forwards';
+                        });
+                        
+                        // After fade out completes, proceed to login
+                        setTimeout(proceedToLogin, 1500);
+                    }, 6500);
+                    
+                } catch (error) {
+                    handleAnimationError();
+                }
+            }
+            
+            function handleAnimationError() {
+                loader.style.display = 'none';
+                fallbackMessage.style.display = 'block';
+                
+                // Auto-proceed after 3 seconds if user doesn't click
+                setTimeout(() => {
+                    if (fallbackMessage.style.display === 'block') {
+                        skipAnimation();
+                    }
+                }, 3000);
+            }
+            
+            // Skip animation function
+            function skipAnimation() {
+                proceedToLogin();
+            }
+            
+            function proceedToLogin() {
+                window.location.href = "{{ url_for('login_as') }}";
+            }
+            
+            // Start the animation
+            startAnimation();
+            
+            // Check if animation is stuck and auto-skip after 10 seconds
+            setTimeout(function() {
+                proceedToLogin();
+            }, 10000);
+            
+            // Handle orientation changes
+            window.addEventListener('orientationchange', function() {
+                // Force redraw for Android devices
+                setTimeout(() => {
+                    const fontSize = window.innerHeight > window.innerWidth ? '80px' : '60px';
+                    letters.forEach(letter => {
+                        letter.style.fontSize = fontSize;
+                    });
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>
